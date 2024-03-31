@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Todo.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Todo"
+    xmlns:view="clr-namespace:Todo.View"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False">
+
+    <ShellContent Title="MainPage" ContentTemplate="{DataTemplate view:MainPage}"
+                    Route="MainPage"/>
+
+    <TabBar>
+        <Tab Title="ToDo"
+             Icon="todo.png"
+             Route="todo">
+            <ShellContent Title="Todo" ContentTemplate="{DataTemplate view:TodoView}"
+                    Route="TodoView" />
+        </Tab>
+        <Tab Title="Sprints" Route="sprints"
+            Icon="sprint.png">
+            <ShellContent Title="Sprint" ContentTemplate="{DataTemplate view:SprintView}"
+                    Route="SprintView" />
+        </Tab>
+        <Tab Title="Settings" Route="setting"
+            Icon="setting.png">
+            <ShellContent Title="Todo" ContentTemplate="{DataTemplate view:TodoView}"
+                    Route="TodoView" />
+        </Tab>
+    </TabBar>
+
+
+</Shell>

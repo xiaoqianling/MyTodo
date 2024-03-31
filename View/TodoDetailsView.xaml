@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:behavior="clr-namespace:Todo.Behaviour"
+             xmlns:viewmodel="clr-namespace:Todo.ViewModel"
+             xmlns:model="clr-namespace:Todo.Model"
+             xmlns:Converters="clr-namespace:Todo.View.Converters"
+             x:Class="Todo.View.TodoDetailsView"
+             x:DataType="viewmodel:TodoDetailsViewModel"
+             Title="Todo Title"
+             Shell.TabBarIsVisible="False"
+             Shell.BackgroundColor="{Binding TodoModel.Color, Converter={StaticResource ValueToColorConverter}}">
+    <!--TODO 将页面背景色设置为note颜色-->
+    <!--BackgroundColor="{Binding TodoModel.Color, Converter={StaticResource ValueToColorConverter}}"-->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:IntToBoolConverter x:Key="IntToBoolConverter" />
+            <Converters:ValueToColorConverter x:Key="ValueToColorConverter" />
+            <Color x:Key="TrueLabelTextColor">Gray</Color>
+            <Color x:Key="FalseLabelTextColor">Black</Color>
+            <toolkit:BoolToObjectConverter x:Key="BoolToTextColorLabelConverter" 
+                                   TrueObject="{StaticResource TrueLabelTextColor}" 
+                                   FalseObject="{StaticResource FalseLabelTextColor}"/>
+
+            <Color x:Key="TrueCheckBoxColor">Gray</Color>
+            <Color x:Key="FalseCheckBoxColor">CadetBlue</Color>
+            <toolkit:BoolToObjectConverter x:Key="BoolToColorIsCompleteConverter" 
+                                   TrueObject="{StaticResource TrueCheckBoxColor}" 
+                                   FalseObject="{StaticResource FalseCheckBoxColor}"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid Margin="15,0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <ImageButton Command="{Binding CancelCommand}" Source="back"
+                         Grid.Row="0" Grid.Column="0" Padding="0,10"
+                         HorizontalOptions="Start"
+                         VerticalOptions="Start"/>
+            <!--<Label Grid.Row="0" Text="{Binding TodoModel.Color, StringFormat='Color:{0}'}" TextColor="Red"/>
+            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Test, StringFormat='Test:{0}'}" TextColor="Red"/>
+            <Label Grid.Row="1" Text="{Binding TodoModel.Name, StringFormat='Name:{0}'}" TextColor="Red"/>
+            <Label Grid.Row="2" Text="{Binding SelectedSprintID, StringFormat='SelectedSprintID:{0}'}" TextColor="Red"/>-->
+            <StackLayout Spacing="5" 
+                         Grid.Row="1"
+                         Grid.RowSpan="3"
+                         Grid.ColumnSpan="4"
+                         VerticalOptions="FillAndExpand"
+                         HorizontalOptions="FillAndExpand"
+                         Orientation="Vertical">
+
+                <VerticalStackLayout Spacing="20" Grid.Row="1">
+                    <Entry Text="{Binding TodoModel.Name, Mode=TwoWay}" Placeholder="Title" 
+                       FontSize="Title"/>
+                </VerticalStackLayout>
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center" Grid.Row="2">
+                        <Label Text="事项集合:" FontSize="Medium" BackgroundColor="Red"
+                                VerticalOptions="Center" HorizontalOptions="Start"/>
+                        <Picker x:Name="SprintPicker" Background="Green" 
+                                ItemsSource="{Binding SprintModels}"
+                                ItemDisplayBinding="{Binding Id}"
+                                SelectedItem="{Binding SelectedSprint, Mode=TwoWay}"
+                                FontSize="Medium" VerticalOptions="Center" HorizontalOptions="Start"/>
+                </HorizontalStackLayout>
+
+
+                <Editor Text="{Binding TodoModel.Description}" Background="AliceBlue"
+                        Placeholder="Start Typing" Grid.ColumnSpan="4"
+                        Grid.Column="0" Grid.Row="3"
+                    FontSize="Body" FontAutoScalingEnabled="True"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"/>
+            </StackLayout>
+
+            <Border Grid.Row="5"
+                    Grid.ColumnSpan="4"
+                    Grid.Column="0"
+                    StrokeThickness="0"
+                    VerticalOptions="End"
+                    HorizontalOptions="Center"
+                    Padding="15">
+                <Grid RowDefinitions="*" ColumnDefinitions="*,*,*,*"
+                  ColumnSpacing="50" 
+                  VerticalOptions="Center"
+                  HorizontalOptions="Center">
+                    <HorizontalStackLayout HorizontalOptions="Center" Grid.Column="0" >
+                        <Label Text="Done" FontAttributes="Bold" FontSize="Medium"
+                               VerticalOptions="Center" HorizontalOptions="Start"/>
+                        <behavior:EventToCommandObserver
+                                        Command="{Binding Path=IsCompleteTappedCommand, Mode=OneTime, Source={RelativeSource AncestorType={x:Type viewmodel:TodoViewModel}}}"
+                                        CommandParameter="{Binding .}"
+                                        HorizontalOptions="Center">
+                            <CheckBox x:Name="xIsComplete" 
+                              behavior:EventToCommandObserver.EventName="CheckedChanged"
+                              Color="{Binding Source={Reference xIsComplete}, Path=IsChecked, Converter={StaticResource BoolToColorIsCompleteConverter}}" 
+                              IsChecked="{Binding TodoModel.IsComplete, Mode=TwoWay}"/>
+                        </behavior:EventToCommandObserver>
+                    </HorizontalStackLayout>
+
+                    <ImageButton Source="{OnPlatform WinUI=approve.png, Default=approve}" HeightRequest="35" WidthRequest="30" BackgroundColor="CadetBlue"
+                                        HorizontalOptions="Center" VerticalOptions="Center"
+                                        Grid.Column="1"
+                                        Command="{Binding SaveCommand}"/>
+                    <ImageButton Grid.Column="2" Source="{OnPlatform WinUI=cancel.png, Default=cancel}" HeightRequest="35" BackgroundColor="CadetBlue"
+                                 WidthRequest="30" Command="{Binding CancelCommand}"
+                                 HorizontalOptions="Center" VerticalOptions="Center" />
+                    <ImageButton Grid.Column="3" Source="{OnPlatform WinUI=delete.png, Default=delete}" HeightRequest="35" BackgroundColor="Red"
+                                 Command="{Binding DeleteCommand}" 
+                                 IsVisible="{Binding TodoModel.Id, Converter={StaticResource IntToBoolConverter}}" 
+                                 WidthRequest="30" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Grid>
+            </Border>
+            <!--<StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="4" 
+                         Margin="0,10">
+                <behavior:EventToCommandObserver
+                                        Command="{Binding Path=IsCompleteTappedCommand, Mode=OneTime, Source={RelativeSource AncestorType={x:Type viewmodel:TodoViewModel}}}"
+                                        CommandParameter="{Binding .}" Grid.Column="0"
+                    HorizontalOptions="Center">
+                    <CheckBox x:Name="xIsComplete" 
+                              behavior:EventToCommandObserver.EventName="CheckedChanged"
+                              Color="{Binding Source={Reference xIsComplete}, Path=IsChecked, Converter={StaticResource BoolToColorIsCompleteConverter}}" 
+                              IsChecked="{Binding TodoModel.IsComplete, Mode=TwoWay}"/>
+                </behavior:EventToCommandObserver>
+            --><!--<ImageButton Command="{Binding SaveCommand}" Source="save.png" Grid.Column="1"
+                    HorizontalOptions="CenterAndExpand" Scale="1.1"/>--><!--
+                <ImageButton Command="{Binding DeleteCommand}" 
+                        IsVisible="{Binding TodoModel.Id, Converter={StaticResource IntToBoolConverter}}" 
+                        Source="delete.png" 
+                        Grid.Column="1"
+                        HorizontalOptions="CenterAndExpand" Scale="0.8"/>
+            --><!--<ImageButton Command="{Binding CancelCommand}" Source="cancel.png" 
+                        Grid.Column="3"
+                        HorizontalOptions="CenterAndExpand" Scale="1.1"/>--><!--
+            </StackLayout>-->
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

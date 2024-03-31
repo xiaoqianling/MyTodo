@@ -1,0 +1,14 @@
+﻿global using CommunityToolkit.Maui;
+global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
+global using System.Collections.ObjectModel;
+global using System.ComponentModel;
+global using System.Diagnostics;
+global using System.Runtime.CompilerServices;
+global using System.Text.Json;
+global using Todo.Contracts;
+global using Todo.Extensions;
+global using Todo.Model;
+global using Todo.Services;
+global using Todo.View;
+global using Todo.ViewModel;
